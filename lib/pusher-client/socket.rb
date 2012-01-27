@@ -27,7 +27,7 @@ module PusherClient
       @encrypted = options[:encrypted] || false
 
       bind('pusher:connection_established') do |data|
-        socket = JSON.parse(data)
+        socket = String === data ? JSON.parse(data) : JSON.parse(data.to_json)    ### on my system, data was from type hash !?
         @connected = true
         @socket_id = socket['socket_id']
         subscribe_all
@@ -44,9 +44,9 @@ module PusherClient
 
     def connect(async = false)
       if @encrypted || @secure
-        url = "wss://#{HOST}:#{WSS_PORT}#{@path}"
+        url = "wss://#{PusherClient.host}:#{PusherClient.wss_port}#{@path}"
       else
-        url = "ws://#{HOST}:#{WS_PORT}#{@path}"
+        url = "ws://#{PusherClient.host}:#{PusherClient.ws_port}#{@path}"
       end
       PusherClient.logger.debug("Pusher : connecting : #{url}")
 
@@ -80,15 +80,45 @@ module PusherClient
       end
     end
 
-    def subscribe(channel_name, user_id = nil)
-      @user_data = {:user_id => user_id}.to_json unless user_id.nil?
+    # def subscribe(channel_name, user_id = nil)
+    #   @user_data = {:user_id => user_id}.to_json unless user_id.nil?
       
+    #   channel = @channels << channel_name
+    #   if @connected
+    #     authorize(channel, method(:authorize_callback))
+    #   end
+    #   return channel
+    # end
+
+
+    #allows to pass user_info 
+    def subscribe(channel_name, user_id = nil, user_info = nil )
+      
+      puts "!!!! ****"
+      puts "!!!! subscribe(#{channel_name}, #{user_id}, #{user_info})"
+      puts "!!!! ****"
+      
+      #cache for subscribe_all call when connection binding is fired ..
+      @user_id, @user_info = user_id, user_info
+      
+      @user_data = nil
+      if !user_id.nil? && user_info.nil?  
+        @user_data = {:user_id => user_id}.to_json 
+      else
+        @user_data = {
+          :user_id => user_id, 
+          :user_info => user_info
+        }.to_json
+      end
+
       channel = @channels << channel_name
       if @connected
         authorize(channel, method(:authorize_callback))
       end
       return channel
     end
+
+
 
     def unsubscribe(channel_name)
       channel = @channels.remove channel_name
@@ -113,11 +143,19 @@ module PusherClient
       end
     end
 
+    # def subscribe_all
+    #   @channels.channels.clone.each{ |k,v| 
+    #     subscribe(k)
+    #   }
+    # end
+
+    #quick hack 
     def subscribe_all
       @channels.channels.clone.each{ |k,v| 
-        subscribe(k)
+        subscribe(k, @user_id, @user_info)
       }
     end
+
     
     #auth for private and presence
     def authorize(channel, callback)
