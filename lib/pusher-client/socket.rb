@@ -80,23 +80,8 @@ module PusherClient
       end
     end
 
-    # def subscribe(channel_name, user_id = nil)
-    #   @user_data = {:user_id => user_id}.to_json unless user_id.nil?
-      
-    #   channel = @channels << channel_name
-    #   if @connected
-    #     authorize(channel, method(:authorize_callback))
-    #   end
-    #   return channel
-    # end
-
-
     #allows to pass user_info 
     def subscribe(channel_name, user_id = nil, user_info = nil )
-      
-      puts "!!!! ****"
-      puts "!!!! subscribe(#{channel_name}, #{user_id}, #{user_info})"
-      puts "!!!! ****"
       
       #cache for subscribe_all call when connection binding is fired ..
       @user_id, @user_info = user_id, user_info
@@ -143,16 +128,9 @@ module PusherClient
       end
     end
 
-    # def subscribe_all
-    #   @channels.channels.clone.each{ |k,v| 
-    #     subscribe(k)
-    #   }
-    # end
-
-    #quick hack 
     def subscribe_all
       @channels.channels.clone.each{ |k,v| 
-        subscribe(k, @user_id, @user_info)
+        subscribe(k, @user_id, @user_info)  #quick hack, add user data to each subscription
       }
     end
 
