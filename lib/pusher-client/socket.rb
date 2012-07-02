@@ -201,6 +201,11 @@ module PusherClient
     end
 
     def parser(data)
+      unless data
+        PusherClient.logger.warn("Pusher : parser(data), data was empty")
+        return
+      end
+      
       begin
         return JSON.parse(data)
       rescue => err
