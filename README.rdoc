@@ -73,12 +73,13 @@ For further documentation, read the source & test suite. Some features of the Ja
 are not yet implemented.
 
 
-== Configuration when using the Slanger gem
 
+== Configuration when using a local 'Slanger' server
 
   PusherClient.host = 'localhost'
   PusherClient.ws_port = 8080
   PusherClient.wss_port = 443
+
 
 
 == Contributing to pusher-client
