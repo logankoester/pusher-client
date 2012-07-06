@@ -49,23 +49,31 @@ module PusherClient
         url = "ws://#{PusherClient.host}:#{PusherClient.ws_port}#{@path}"
       end
       PusherClient.logger.debug("Pusher : connecting : #{url}")
-
+      
       @connection_thread = Thread.new {
-        @connection = WebSocket.new(url)
-        PusherClient.logger.debug "Websocket connected"
         loop do
-          msg = @connection.receive[0]
-          params  = parser(msg)
-          next if (params['socket_id'] && params['socket_id'] == self.socket_id)
-          event_name   = params['event']
-          event_data   = params['data']
-          channel_name = params['channel']
-          send_local_event(event_name, event_data, channel_name)
+          begin
+            @connection = WebSocket.new(url)
+            PusherClient.logger.debug "Websocket connected"
+            loop do
+              msg = @connection.receive[0]
+              params  = parser(msg)
+              next if (params['socket_id'] && params['socket_id'] == self.socket_id)
+              event_name   = params['event']
+              event_data   = params['data']
+              channel_name = params['channel']
+              send_local_event(event_name, event_data, channel_name)
+            end
+            next
+          rescue Exception=>bang
+            sleep(1)
+          end
         end
       }
-
+      
       @connection_thread.run
       @connection_thread.join unless async
+      
       return self
     end
 
