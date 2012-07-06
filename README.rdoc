@@ -11,6 +11,7 @@ may be sent on. You can't just bind a global event without subscribing to any ch
 
 == Installation
   gem install pusher-client
+
 == Single-Threaded Usage
 The application will pause at socket.connect and handle events from Pusher as they happen.
 
@@ -70,6 +71,16 @@ and you can continue to subscribe/unsubscribe to channels and bind new events.
 
 For further documentation, read the source & test suite. Some features of the JavaScript client
 are not yet implemented.
+
+
+
+== Configuration when using a local 'Slanger' server
+
+  PusherClient.host = 'localhost'
+  PusherClient.ws_port = 8080
+  PusherClient.wss_port = 443
+
+
 
 == Contributing to pusher-client
  
