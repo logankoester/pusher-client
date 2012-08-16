@@ -1,1 +1,1 @@
-This project has become the official Ruby client for Pusher, and is under new management over at [https://github.com/pusher/pusher-ruby-client](https://github.com/pusher/pusher-ruby-client).
+This project has become the official Ruby client for Pusher, and is under new management over at https://github.com/pusher/pusher-ruby-client
